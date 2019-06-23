@@ -55,6 +55,7 @@ class ArticleController extends AbstractController {
 			$em->persist( $article );
 			$em->flush();
 
+			$this->addFlash('success', 'Article is successfully created!');
 
 			return $this->redirectToRoute( "article.index" );
 		}
