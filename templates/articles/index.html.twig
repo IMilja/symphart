@@ -1,5 +1,32 @@
 {% extends 'base.html.twig' %}
 {% block title %} SymphArt Articles {% endblock %}
 {% block body %}
-    <h1>Article</h1>
+  {% if articles %}
+    <table class="table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Article name</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for article in articles %}
+          <tr>
+            <td>
+              {{ article.id }}
+            </td>
+            <td>
+              {{ article.name }}
+            </td>
+            <td>
+              <a href="{{ path('article.index') }}" class="btn btn-dark">Show</a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>There are no articles</p>
+  {% endif %}
 {% endblock %}
