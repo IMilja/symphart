@@ -2,21 +2,134 @@
 
 namespace App\Controller;
 
+use App\Entity\Article;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 /**
- * @Route("/article", name="article.")
+ * @Route(path="/article", name="article.")
  */
-class ArticleController extends Controller{
-    /**
-     *  @Route("/", name="index");
-     *  @Method({"GET"})
-     */
-    public function index(){
-        // return new Response("<html><body>Hello</body></html>");
-        return $this->render('articles/index.html.twig');
-    }
+class ArticleController extends AbstractController {
+
+	/**
+	 * @Route(path="/", name="index");
+	 */
+	public function index() {
+
+		$articles = $this->getDoctrine()->getRepository( Article::class )->findAll();
+
+		return $this->render( 'articles/index.html.twig', [
+			'articles' => $articles
+		] );
+	}
+
+
+	/**
+	 * @Route(path="/create", name="create")
+	 * @param Request $request
+	 *
+	 * @return RedirectResponse|Response
+	 */
+	public function create( Request $request ) {
+		$article = new Article();
+
+		$form = $this->createFormBuilder( $article )
+		             ->add( 'title', TextType::class )
+		             ->add( 'body', TextareaType::class )
+		             ->add( 'save', SubmitType::class, [ 'label' => 'Create' ] )
+		             ->getForm();
+
+		$form->handleRequest( $request );
+
+		if ( $form->isSubmitted() && $form->isValid() ) {
+			$article = $form->getData();
+
+			$em = $this->getDoctrine()->getManager();
+
+			$em->persist( $article );
+			$em->flush();
+
+			$this->addFlash('success', 'Article is successfully created!');
+
+			return $this->redirectToRoute( "article.index" );
+		}
+
+		return $this->render( 'articles/create.html.twig', [
+			'form' => $form->createView(),
+		] );
+
+	}
+
+	/**
+	 * @Route(path="/view/{id}", name="view")
+	 * @param $id
+	 *
+	 * @return Response
+	 */
+	public function view( $id ) {
+		$article = $this->getDoctrine()->getRepository( Article::class )->find( $id );
+
+		return $this->render( 'articles/view.html.twig', [
+			'article' => $article
+		] );
+	}
+
+	/**
+	 * @Route(path="/update/{id}", name="update")
+	 * @param Request $request
+	 * @param $id
+	 *
+	 * @return Response
+	 */
+	public function update( Request $request, $id ) {
+		$article = $this->getDoctrine()->getRepository( Article::class )->find( $id );
+
+		$form = $this->createFormBuilder( $article )
+		             ->add( 'title', TextType::class )
+		             ->add( 'body', TextareaType::class )
+		             ->add( 'save', SubmitType::class, [ 'label' => 'Update' ] )
+		             ->getForm();
+
+		$form->handleRequest( $request );
+
+		if ( $form->isSubmitted() && $form->isValid() ) {
+			$article = $form->getData();
+
+			$em = $this->getDoctrine()->getManager();
+
+			$em->persist( $article );
+			$em->flush();
+
+			$this->addFlash('success', 'Article is successfully updated!');
+
+			return $this->redirectToRoute( "article.view", [ 'id' => $article->getId() ] );
+		}
+
+		return $this->render( 'articles/update.html.twig', [
+			'form' => $form->createView(),
+		] );
+	}
+
+	/**
+	 * @Route(path="/delete/{id}", name="delete")
+	 * @param $id
+	 *
+	 * @return RedirectResponse
+	 */
+	public function delete( $id ) {
+		$em = $this->getDoctrine()->getManager();
+		$article = $em->getRepository(Article::class)->find($id);
+		$em->remove($article);
+		$em->flush();
+
+		$this->addFlash('success', 'Article is successfully deleted!');
+
+		return $this->redirectToRoute('article.index');
+	}
 }
