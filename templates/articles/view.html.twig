@@ -1,0 +1,12 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+  <h2>Article title: {{ article.title }}</h2>
+  <div>
+    <h5>Article body</h5>
+    <p>
+      {{ article.body }}
+    </p>
+  </div>
+  <a href="{{ path('article.index') }}" class="btn btn-primary">Back</a>
+{% endblock %}

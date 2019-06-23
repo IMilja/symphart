@@ -7,6 +7,7 @@
         <tr>
           <th>#</th>
           <th>Article name</th>
+          <th>Article body</th>
           <th>Actions</th>
         </tr>
       </thead>
@@ -17,10 +18,13 @@
               {{ article.id }}
             </td>
             <td>
-              {{ article.name }}
+              {{ article.title }}
             </td>
             <td>
-              <a href="{{ path('article.index') }}" class="btn btn-dark">Show</a>
+              {{ article.body }}
+            </td>
+            <td>
+              <a href="{{ path('article.view', {'id':article.id})}}" class="btn btn-dark">Show</a>
             </td>
           </tr>
         {% endfor %}
@@ -29,4 +33,7 @@
   {% else %}
     <p>There are no articles</p>
   {% endif %}
+  <div>
+    <a href="{{ path('article.create') }}" class="btn btn-primary">Create new article</a>
+  </div>
 {% endblock %}
