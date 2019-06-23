@@ -11,6 +11,16 @@
   <body>
     {{ include('includes/nav.html.twig') }}
     <div class="container">
+      {% for label, messages in app.flashes %}
+        {% for message in messages %}
+          <div class="alert alert-{{ label }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+        {% endfor %}
+      {% endfor %}
       {% block body %}{% endblock %}
     </div>
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
@@ -23,6 +33,7 @@
         integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
         crossorigin="anonymous"></script>
     {% block javascripts %}{% endblock %}
+    <script src="{{ asset('js/main.js') }}"></script>
   </body>
 
 </html>

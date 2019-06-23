@@ -105,12 +105,30 @@ class ArticleController extends AbstractController {
 			$em->persist( $article );
 			$em->flush();
 
+			$this->addFlash('success', 'Article is successfully updated!');
 
-			return $this->redirectToRoute( "article.view", ['id'=>$article->getId()] );
+			return $this->redirectToRoute( "article.view", [ 'id' => $article->getId() ] );
 		}
 
 		return $this->render( 'articles/update.html.twig', [
 			'form' => $form->createView(),
 		] );
+	}
+
+	/**
+	 * @Route(path="/delete/{id}", name="delete")
+	 * @param $id
+	 *
+	 * @return RedirectResponse
+	 */
+	public function delete( $id ) {
+		$em = $this->getDoctrine()->getManager();
+		$article = $em->getRepository(Article::class)->find($id);
+		$em->remove($article);
+		$em->flush();
+
+		$this->addFlash('success', 'Article is successfully deleted!');
+
+		return $this->redirectToRoute('article.index');
 	}
 }
